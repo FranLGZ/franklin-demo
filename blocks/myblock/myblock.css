@@ -1,4 +1,9 @@
 .myblock.block {
-  background-color: red;
-  border: 2px solid green;
+  top: 0px;
+  position: fixed;
+  height: 100%;
+  width: 20%;
+  right: 0;
+  background-color: white;
+  border-left: 1px solid #c1c1c1;
 }
