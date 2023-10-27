@@ -55,6 +55,8 @@ export default async function decorate(block) {
     aside.id = 'isi';
     aside.setAttribute('aria-expanded', true);
 
+    alert('Testing JS!!');
+
     // wrap body content
     const body = document.createElement('div');
     body.className = 'isi-body';
