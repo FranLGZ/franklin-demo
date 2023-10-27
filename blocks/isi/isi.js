@@ -7,8 +7,6 @@ import {
   // eslint-disable-next-line import/no-unresolved
 } from '../../lib/scripts/lib-franklin.js';
 
-alert('Testing JS!!');
-
 function closeOnEscape(e) {
   if (e.code === 'Escape') {
     const isi = document.getElementById('isi');
@@ -39,6 +37,18 @@ function closeOnEscape(e) {
 }
 
 export default async function decorate(block) {
+  // element that will be wrapped
+  var el = document.querySelector('p.button-container');
+
+  // create wrapper container
+  var wrapper = document.createElement('div');
+
+  // insert wrapper before el in the DOM tree
+  el.parentNode.insertBefore(wrapper, el);
+
+  // move el into wrapper
+  wrapper.appendChild(el);
+
   const link = block.querySelector('a');
   const path = link ? link.getAttribute('href') : block.textContent.trim();
 
