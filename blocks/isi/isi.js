@@ -7,6 +7,8 @@ import {
   // eslint-disable-next-line import/no-unresolved
 } from '../../lib/scripts/lib-franklin.js';
 
+alert('Testing JS!!');
+
 function closeOnEscape(e) {
   if (e.code === 'Escape') {
     const isi = document.getElementById('isi');
@@ -54,8 +56,6 @@ export default async function decorate(block) {
 
     aside.id = 'isi';
     aside.setAttribute('aria-expanded', true);
-
-    alert('Testing JS!!');
 
     // wrap body content
     const body = document.createElement('div');
