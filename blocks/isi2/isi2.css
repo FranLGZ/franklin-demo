@@ -1,0 +1,427 @@
+.isi-container.section {
+  position: relative;
+  padding: 0;
+  width: 100%;
+}
+
+.isi {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: #f3f4fb;
+  transition: top 0.6s;
+  z-index: 11;
+}
+
+.isi[data-state='expanded'] {
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 12;
+}
+
+.isi.viewed[data-state='inline'] {
+  background-color: var(--background-color);
+}
+
+@media (min-width: 900px) {
+  .isi {
+    background-color: var(--background-color);
+  }
+
+  .isi[data-state='expanded'],
+  .isi[data-state='partial'],
+  .isi[data-state='collapsed'] {
+    left: 0;
+  }
+}
+
+.isi h2,
+.isi h3,
+.isi h4 {
+  margin: 0 0 10px;
+  color: var(--color-sapphire);
+  font-size: var(--body-font-size-m);
+  font-weight: 500;
+  line-height: 24px;
+  text-transform: uppercase;
+}
+
+.isi a {
+  word-break: break-all;
+}
+
+.isi .section {
+  max-width: calc(var(--max-content-width) + 40px);
+  margin: auto;
+  padding: 11px 15px;
+}
+
+/* body */
+.isi .isi-body {
+  padding: 17px 0;
+}
+
+.isi[data-state='partial'] .isi-body,
+.isi[data-state='expanded'] .isi-body {
+  background: var(--isi-body);
+}
+
+.isi .isi-body .section {
+  padding-bottom: 30px;
+}
+
+.isi .isi-body ul {
+  padding: 0 17px;
+  margin: 0 0 10px 8px;
+}
+
+.isi .isi-body p,
+.isi .isi-body ul li {
+  color: var(--color-warm-gray);
+  font-size: var(--body-font-size-l);
+  line-height: 24px;
+}
+
+@media (min-width: 600px) {
+  .isi .section {
+    padding: 15px;
+  }
+}
+
+/* "back" button */
+.isi-container button.isi-back {
+  position: sticky;
+  top: var(--nav-height);
+  margin-top: -60px;
+  margin-left: calc(100% - 60px - 15px);
+  padding: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background-color: var(--color-cobalt);
+  color: var(--color-white);
+  transition: background-color 0.2s;
+  z-index: 1;
+}
+
+.isi-container button.isi-back:hover,
+.isi-container button.isi-back:focus {
+  background-color: var(--color-sapphire);
+  opacity: 1;
+}
+
+.isi-container button.isi-back::after {
+  content: '';
+  display: block;
+  transform: rotate(-45deg);
+  width: 30px;
+  height: 30px;
+  margin: 13px 0 0 13px;
+  border-color: currentcolor;
+}
+
+@media (min-width: 1330px) {
+  .isi-container button.isi-back {
+    margin-left: calc(50% + (var(--max-content-width) / 2) + 15px);
+  }
+}
+
+/* head */
+.isi .isi-head {
+  background-color: var(--color-teal-50-solid);
+}
+
+.isi.viewed .isi-head,
+.isi[data-state='expanded'] .isi-head {
+  background-color: #f3f4fb;
+}
+
+.isi.viewed[data-state='inline'] .isi-head {
+  background-color: var(--color-teal-50);
+}
+
+.isi.viewed .isi-head .section,
+.isi[data-state='expanded'] .isi-head .section {
+  padding: 0;
+}
+
+.isi .isi-head h2 {
+  margin: 0;
+  font-size: var(--body-font-size-l);
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.isi.viewed .isi-head h2,
+.isi[data-state='expanded'] .isi-head h2 {
+  padding: 11px 15px;
+}
+
+.isi .isi-head > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 17px;
+  min-height: 75px;
+}
+
+.isi.viewed .isi-head > div,
+.isi[data-state='expanded'] .isi-head > div {
+  flex-direction: column-reverse;
+}
+
+.isi.viewed .isi-head > div > *,
+.isi[data-state='expanded'] .isi-head > div > * {
+  width: 100%;
+}
+
+.isi .isi-head .button-container {
+  display: flex;
+  gap: 17px;
+}
+
+.isi.viewed .isi-head .button-container {
+  gap: 0;
+}
+
+.isi[data-state='inline'] .isi-head .button-container {
+  margin: 0;
+  visibility: hidden;
+}
+
+.isi .isi-head button {
+  margin: 0;
+  padding: 0.2em;
+  background-color: transparent;
+  font-size: var(--body-font-size);
+}
+
+.isi.viewed .isi-head button,
+.isi[data-state='expanded'] .isi-head button {
+  flex: 1 1 auto;
+  display: block;
+  border-radius: 0;
+  padding: 11px 20px;
+  background-color: var(--color-teal-50-solid);
+}
+
+.isi.viewed .isi-head button.isi-collapse {
+  background-color: var(--background-color);
+  border: 1px solid #d9d9d9;
+}
+
+.isi.viewed[data-state='expanded'] .isi-head button.isi-collapse {
+  background-color: var(--color-teal-50);
+  border-color: transparent;
+}
+
+.isi[data-state='expanded'] .isi-head button.isi-expand {
+  display: none;
+  visibility: hidden;
+}
+
+.isi[data-state='inline'] .isi-head .button-container,
+.isi .isi-head button:disabled,
+.isi .isi-head button.disabled {
+  display: none;
+  visibility: hidden;
+  width: 0;
+}
+
+.isi .isi-head button::after {
+  display: none;
+}
+
+.isi-head button .icon-mobile-expand-icon {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+}
+
+.isi .isi-head button .icon-expand-icon,
+.isi.viewed .isi-head button .icon-mobile-expand-icon {
+  visibility: hidden;
+  display: none;
+}
+
+.isi.viewed .isi-head button .icon-expand-icon {
+  visibility: visible;
+  display: unset;
+}
+
+.isi .isi-head button svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.isi .isi-head button .isi-btn-text {
+  display: none;
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+  line-height: 20px;
+  text-transform: uppercase;
+}
+
+.isi.viewed .isi-head button .isi-btn-text,
+.isi[data-state='expanded'] .isi-head button .isi-btn-text {
+  display: unset;
+}
+
+@media (min-width: 600px) {
+  .isi.viewed .isi-head,
+  .isi[data-state='expanded'] .isi-head {
+    background-color: var(--color-teal-50-solid);
+  }
+
+  .isi.viewed .isi-head .section,
+  .isi[data-state='expanded'] .isi-head .section {
+    padding: 15px;
+  }
+
+  .isi.viewed .isi-head h2,
+  .isi[data-state='expanded'] .isi-head h2 {
+    padding: 0;
+  }
+
+  .isi.viewed .isi-head > div,
+  .isi[data-state='expanded'] .isi-head > div {
+    flex-direction: unset;
+  }
+
+  .isi.viewed .isi-head > div > *,
+  .isi[data-state='expanded'] .isi-head > div > * {
+    width: unset;
+  }
+
+  .isi.viewed .isi-head .button-container {
+    gap: 17px;
+  }
+
+  .isi .isi-head button {
+    border: 1px solid #d9d9d9;
+    padding: 11px 20px;
+    background-color: var(--color-white);
+  }
+
+  .isi.viewed[data-state='expanded'] .isi-head button.isi-collapse {
+    background-color: var(--background-color);
+    border-color: #d9d9d9;
+  }
+
+  .isi.viewed .isi-head button,
+  .isi[data-state='expanded'] .isi-head button {
+    border-radius: 52px;
+    background-color: var(--color-white);
+  }
+
+  .isi[data-state='expanded'] .isi-head button.isi-expand {
+    display: none;
+    visibility: hidden;
+  }
+
+  .isi .isi-head button .icon-expand-icon {
+    display: unset;
+    visibility: visible;
+  }
+
+  .isi .isi-head button .icon-mobile-expand-icon {
+    visibility: hidden;
+    display: none;
+  }
+
+  .isi .isi-head button .isi-btn-text {
+    display: unset;
+  }
+}
+
+@media (min-width: 900px) {
+  .isi[data-state='expanded'],
+  .isi[data-state='partial'],
+  .isi[data-state='collapsed'] {
+    background: var(--isi-body);
+  }
+
+  .isi-container .isi-wrapper {
+    max-width: none;
+  }
+
+  .isi .isi-head h2 {
+    font-size: var(--body-font-size-xl);
+  }
+
+  .isi .isi-head {
+    padding: 0 15px;
+  }
+
+  .isi .isi-head .section {
+    max-width: var(--max-content-width);
+    margin: auto;
+    padding: 15px 0;
+  }
+
+  .isi[data-state='inline'] .isi-head {
+    position: relative;
+  }
+
+  .isi[data-state='inline'] .isi-head::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-teal-50-solid);
+    z-index: -1;
+  }
+
+  .isi .isi-body {
+    padding: 17px 15px;
+  }
+
+  .isi .isi-body .section {
+    max-width: var(--max-content-width);
+    margin: auto;
+    padding: 15px 0;
+  }
+
+  .isi.viewed .isi-head .section,
+  .isi[data-state='expanded'] .isi-head .section {
+    padding: 20px 0;
+  }
+
+  .isi .isi-head .button-container {
+    margin: 0;
+  }
+}
+
+/* patient disclaimer */
+.isi .isi-patient-disclaimer {
+  border-radius: 10px;
+  padding: 11px 15px;
+  background-color: var(--color-teal-50);
+  margin-top: 46px;
+}
+
+.isi .isi-patient-disclaimer p {
+  color: var(--color-sapphire);
+  line-height: 17px;
+}
+
+.isi .isi-patient-disclaimer p:not(:last-of-type) {
+  border-bottom: 1px solid;
+  padding-bottom: 1em;
+  font-weight: 500;
+}
+
+@media (min-width: 600px) {
+  .isi .isi-patient-disclaimer p {
+    font-size: var(--body-font-size-s);
+  }
+}
+
+@media (min-width: 900px) {
+  .isi .isi-patient-disclaimer {
+    margin-left: 25px;
+    margin-right: 25px;
+  }
+}
