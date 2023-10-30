@@ -65,7 +65,7 @@ export default async function decorate(block) {
 
     // build patient disclaimer banner
     try {
-      const disc = await fetch('/global/patient-disclaimer.plain.html');
+      const disc = await fetch('new-page.plain.html');
       const temp = document.createElement('div');
       temp.innerHTML = await disc.text();
       // TODO: remove section metadata from patient-disclaimer fragment
