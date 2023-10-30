@@ -1,11 +1,9 @@
-// eslint-disable-next-line import/no-unresolved
 import {
   decorateIcons,
   loadBlocks,
   fetchPlaceholders,
-  decorateFragment,
-  // eslint-disable-next-line import/no-unresolved
-} from '../../lib/scripts/lib-franklin.js';
+} from '../../scripts/lib-franklin.js';
+import { decorateMain } from '../../scripts/scripts.js';
 
 function closeOnEscape(e) {
   if (e.code === 'Escape') {
@@ -13,42 +11,20 @@ function closeOnEscape(e) {
     if (isi) {
       const block = isi.closest('.block');
       const isiHead = isi.querySelector('.isi-head');
-      const button = isiHead.querySelector('button');
       const headingHeight = isiHead.offsetHeight;
       const headingText = isiHead.querySelector('h2').textContent.trim();
       // collapse isi
       document.body.style.overflowY = '';
       block.dataset.state = 'collapsed';
       isi.setAttribute('aria-expanded', false);
-      isi.setAttribute(
-        'aria-label',
-        `${headingText} - ${button.dataset.collapse}`
-      );
-      block.style.height = `${headingHeight}px`;
-      // update button
-      button.querySelector('.isi-toggle-text').textContent =
-        button.dataset.expand;
-      button.setAttribute(
-        'aria-label',
-        `${button.dataset.expand} ${headingText}`
-      );
+      isi.setAttribute('aria-label', `${headingText} - Collapsed`);
+      block.style.top = `${window.innerHeight - headingHeight}px`;
+      block.style.position = 'fixed';
     }
   }
 }
 
 export default async function decorate(block) {
-  // element that will be wrapped
-  var el = document.querySelector('p.button-container');
-
-  // create wrapper container
-  var wrapper = document.createElement('div');
-
-  // insert wrapper before el in the DOM tree
-  el.parentNode.insertBefore(wrapper, el);
-
-  // move el into wrapper
-  wrapper.appendChild(el);
-
   const link = block.querySelector('a');
   const path = link ? link.getAttribute('href') : block.textContent.trim();
 
@@ -57,7 +33,7 @@ export default async function decorate(block) {
   if (resp.ok) {
     const aside = document.createElement('aside');
     aside.innerHTML = await resp.text();
-    decorateFragment(aside);
+    decorateMain(aside, true);
     await loadBlocks(aside);
     block.innerHTML = '';
     block.append(aside);
@@ -66,12 +42,44 @@ export default async function decorate(block) {
 
     aside.id = 'isi';
     aside.setAttribute('aria-expanded', true);
+    block.style.position = 'fixed';
+    block.style.top = '80vh';
+
+    // build "back" button
+    const backBtn = document.createElement('button');
+    backBtn.className = 'isi-back';
+    backBtn.setAttribute('aria-controls', 'isi');
+    backBtn.setAttribute('type', 'button');
+    backBtn.setAttribute('aria-label', ph.isiBack);
+    backBtn.addEventListener('click', () => {
+      backBtn.blur();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    block.closest('.section').prepend(backBtn);
 
     // wrap body content
     const body = document.createElement('div');
     body.className = 'isi-body';
     body.append(...aside.children);
     aside.append(body);
+
+    // build patient disclaimer banner
+    try {
+      const disc = await fetch('new-page.plain.html');
+      const temp = document.createElement('div');
+      temp.innerHTML = await disc.text();
+      // TODO: remove section metadata from patient-disclaimer fragment
+      if (temp.querySelector('[class]')) {
+        temp.querySelectorAll('[class]').forEach((c) => c.remove());
+      }
+      const banner = document.createElement('div');
+      banner.innerHTML = temp.firstElementChild.innerHTML;
+      banner.className = 'default-content-wrapper isi-patient-disclaimer';
+      body.lastElementChild.append(banner);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('Could not inject patient disclaimer:', error);
+    }
 
     // build and decorate heading
     const headingWrapper = document.createElement('div');
@@ -89,62 +97,63 @@ export default async function decorate(block) {
     block.dataset.state = 'partial';
 
     // build buttons
-    const buttonGroup = document.createElement('div');
-    buttonGroup.className =
-      'button-container button-container-multi isi-button-container';
+    const collapseBtn = document.createElement('button');
+    const expandBtn = document.createElement('button');
 
-    const buttonActions = ['Expand', 'Collapse'];
-    buttonActions.forEach((action) => {
-      const btn = document.createElement('button');
-      btn.className = 'button primary';
-      btn.dataset.action = action;
-      if (action === 'Collapse')
-        btn.disabled = sessionStorage.getItem('isi-expanded') !== 'true';
-      btn.setAttribute('type', 'button');
-      btn.setAttribute('aria-controls', 'isi');
-      btn.setAttribute('aria-label', `${ph[`isi${action}`]} ${headingText}`);
-      btn.innerHTML = `<span class="isi-toggle-text">${
-        ph[`isi${action}`]
-      }</span>
-          <span class="icon icon-isi-arrow-${
-            action === 'Expand' ? 'up' : 'down'
-          }"></span>`;
-      buttonGroup.append(btn);
-    });
-    decorateIcons(buttonGroup);
-
-    const expandBtn = buttonGroup.querySelector('[data-action="Expand"]');
-    const collapseBtn = buttonGroup.querySelector('[data-action="Collapse"]');
-
-    expandBtn.addEventListener('click', () => {
-      block.dataset.state = 'expanded';
-      aside.setAttribute('aria-expanded', true);
-      aside.setAttribute('aria-label', `${headingText} - ${ph.isiExpanded}`);
-      block.style.height = '';
-      document.body.style.overflowY = 'hidden';
-      window.addEventListener('keydown', closeOnEscape);
-      collapseBtn.disabled = false;
-      expandBtn.disabled = true;
-      sessionStorage.setItem('isi-expanded', true);
-    });
-
+    collapseBtn.className = 'isi-collapse';
+    collapseBtn.setAttribute('aria-controls', 'isi');
+    collapseBtn.setAttribute('aria-label', ph.isiCollapse);
+    collapseBtn.setAttribute('type', 'button');
+    collapseBtn.innerHTML = `<span class="isi-btn-text isi-collapse">${ph.isiCollapse}</span>
+      <span class="icon icon-collapse-icon"></span>`;
     collapseBtn.addEventListener('click', () => {
-      const headingHeight = headingWrapper.offsetHeight;
+      collapseBtn.disabled = true;
+      expandBtn.disabled = false;
+      block.classList.remove('viewed');
       block.dataset.state = 'collapsed';
       aside.setAttribute('aria-expanded', false);
       aside.setAttribute('aria-label', `${headingText} - ${ph.isiCollapsed}`);
-      block.style.height = `${headingHeight}px`;
+      const headingHeight = headingWrapper.offsetHeight;
+      block.style.top = `${window.innerHeight - headingHeight}px`;
       document.body.style.overflowY = '';
       window.removeEventListener('keydown', closeOnEscape);
-      collapseBtn.disabled = true;
-      expandBtn.disabled = false;
+    });
+    // display collapse button based on session
+    const isiViewed = sessionStorage.getItem('isiViewed');
+    if (!isiViewed) collapseBtn.classList.add('disabled');
+    else block.classList.add('viewed');
+
+    expandBtn.className = 'isi-expand';
+    expandBtn.setAttribute('aria-controls', 'isi');
+    expandBtn.setAttribute('aria-label', ph.isiFindOutMore);
+    expandBtn.setAttribute('type', 'button');
+    expandBtn.innerHTML = `<span class="isi-btn-text">${ph.isiFindOutMore}</span>
+    <span class="icon icon-mobile-expand-icon"></span>
+    <span class="icon icon-expand-icon"></span>`;
+    expandBtn.addEventListener('click', () => {
+      sessionStorage.setItem('isiViewed', true);
+      collapseBtn.classList.remove('disabled');
+      expandBtn.disabled = true;
+      collapseBtn.disabled = false;
+      block.dataset.state = 'expanded';
+      aside.setAttribute('aria-expanded', true);
+      aside.setAttribute('aria-label', `${headingText} - ${ph.isiExpanded}`);
+      block.style.top = 0;
+      document.body.style.overflowY = 'hidden';
+      window.addEventListener('keydown', closeOnEscape);
     });
 
-    headingWrapper.querySelector('div').append(buttonGroup);
+    const btnContainer = document.createElement('div');
+    btnContainer.className = 'button-container';
+    btnContainer.append(expandBtn, collapseBtn);
+    decorateIcons(btnContainer);
+    headingWrapper.querySelector('div').append(btnContainer);
     aside.prepend(headingWrapper);
     window.addEventListener('resize', () => {
-      if (block.dataset.state === 'collapsed') {
-        block.style.height = `${headingWrapper.offsetHeight}px`;
+      if (!block.style.top.includes('vh') && block.style.top !== '0px') {
+        block.style.top = `${
+          window.innerHeight - headingWrapper.offsetHeight
+        }px`;
       }
     });
 
@@ -152,6 +161,15 @@ export default async function decorate(block) {
     if (heading.nodeName === 'H1') {
       aside.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((h) => {
         const level = parseInt(h.nodeName[1], 10);
+        const a = h.querySelector('a[href]');
+        // use anchors to replace ids
+        if (a && a.textContent === h.textContent) {
+          const { hash } = new URL(a.href);
+          if (hash) {
+            h.id = `isi-${hash.substring(1)}`;
+            h.innerHTML = a.innerHTML;
+          }
+        }
         if (level < 5) {
           const newH = document.createElement(`h${level + 1}`);
           newH.id = h.id;
@@ -172,9 +190,7 @@ export default async function decorate(block) {
       state: block.dataset.state,
       expanded: aside.getAttribute('aria-expanded'),
       label: aside.getAttribute('aria-label'),
-      height: block.style.height,
-      expandBtnDisabled: expandBtn.disabled,
-      collapseBtnDisabled: collapseBtn.disabled,
+      top: block.style.top,
     };
     const observer = new IntersectionObserver(
       async (entries) => {
@@ -186,10 +202,8 @@ export default async function decorate(block) {
                 state: block.dataset.state,
                 expanded: aside.getAttribute('aria-expanded'),
                 label: aside.getAttribute('aria-label'),
-                height: block.style.height,
+                top: block.style.top,
                 position: block.style.position,
-                expandBtnDisabled: expandBtn.disabled,
-                collapseBtnDisabled: collapseBtn.disabled,
               };
             }
             // place isi back in document flow
@@ -199,20 +213,16 @@ export default async function decorate(block) {
               'aria-label',
               `${headingText} - ${ph.isiExpanded}`
             );
-            block.style.height = '';
+            block.style.top = 'unset';
+            block.style.position = 'static';
             window.removeEventListener('keydown', closeOnEscape);
-            // disable buttons
-            expandBtn.disabled = true;
-            collapseBtn.disabled = true;
           } else {
             // remove isi from document flow
             block.dataset.state = lastState.state;
             aside.setAttribute('aria-expanded', lastState.expanded);
             aside.setAttribute('aria-label', lastState.label);
-            block.style.height = lastState.height;
-            // enable buttons
-            expandBtn.disabled = lastState.expandBtnDisabled;
-            collapseBtn.disabled = lastState.collapseBtnDisabled;
+            block.style.top = lastState.top;
+            block.style.position = 'fixed';
           }
         }
       },
